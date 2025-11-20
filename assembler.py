@@ -42,7 +42,7 @@ def cmd_to_bin (cmd, arg):
         raise OverflowError(f"Argument {arg} is to big")
     size = (5 + argBits) // 8 + 1
     b = arg << 6 | cmd
-    return b.to_bytes(size, "little")
+    return b.to_bytes(size, "little", signed=cmd==63)
 
 if __name__ == "__main__":
     args = parse_args()

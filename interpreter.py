@@ -18,7 +18,9 @@ def write(address):
     memory[address] = value
 
 def sign(address):
-    pass
+    value = stack_pop()
+    value = (abs(value) // value) if value else 0
+    memory[address] = value
 
 def parse_range(s):
     try:
@@ -44,7 +46,7 @@ def read_cmd(f):
     
     size = 4 if cmd == 63 else 3
     b += f.read(size - 1)
-    arg = int.from_bytes(b, "little") >> 6
+    arg = int.from_bytes(b, "little", signed=cmd==63) >> 6
     return cmd, arg
 
 def save_dump(path, memory):
