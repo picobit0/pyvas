@@ -7,6 +7,12 @@
 ```
 py assembler.py --source <файл с исходным кодом> --output <файл вывода>
 ```
+
+Запуск интерпретатора:
+```
+py interpreter.py --code <файл с двоичным кодом> --dump <файл вывода дампа>
+```
+
 ## Язык ассемблера (.pvs)
 Структура одной строки файла:
 ```
@@ -31,6 +37,85 @@ Wr 2 :
 
 Все символы строки после `:` считаются частью комментария и игнорируются.
 Пустые строки и дополнительные пробелы также игнорируются.
+# Этап 3
+## Список изменений:
+Добавлен интерпретатор двоичного файла.
+
+Аргументы командной строки:
+* `-c` | `--code` - путь к файлу с двоичным кодом
+* `-d` | `--dump` - путь к файлу вывода дампа памяти (.csv)
+* `-r` | `--range` - область дампа памяти (отрезок вида `n-m`)
+## Демонстрация работы:
+Исходный код, копирующий массив из 6 элементов:
+```
+: загрузка массива [1, 2, 3, 4, 39, 48] в ячейки памяти 0-5
+LD 1
+WR 0
+
+LD 2
+WR 1
+
+LD 3
+WR 2
+
+LD 4
+WR 3
+
+LD 39
+WR 4
+
+LD 48
+WR 5
+
+: копирование массива из памяти в стек
+LD 0
+RD 5
+
+LD 1
+RD 3
+
+LD 3
+RD 0
+
+LD 1
+RD 1
+
+LD 0
+RD 1
+
+LD 0
+RD 0
+
+: запись массива из стека в ячейки памяти 7-12
+WR 7
+WR 8
+WR 9
+WR 10
+WR 11
+WR 12
+```
+Компиляция и запуск программы в интерпретаторе:
+```console
+$ py assembler.py -s tests/array-copy.pvs -o tests/array-copy.bin
+```
+```
+"tests/array-copy.pvs" parsed successfully
+"tests/array-copy.pvs" assembled into "tests/array-copy.bin" (102 bytes)
+```
+```console
+$ py interpreter.py -c tests/array-copy.bin -d tests/dump.csv -r 0-16
+```
+```
+"tests/array-copy.bin" read successfully, starting execution
+Execution finished successfully
+Saving memory dump to "tests/dump.csv"
+Memory dump saved
+```
+Содержимое дампа памяти:
+```csv
+1,2,3,4,39,48,0,1,2,3,4,39,48,0,0,0,0
+```
+
 # Этап 2
 ## Список изменений:
 Добавлена сборка программы в двоичный файл.
